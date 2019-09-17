@@ -17,6 +17,8 @@ RUN apk --update add imagemagick
 
 COPY script /script
 
+
+RUN apk add --no-cache bash
 ENTRYPOINT [ "bash" ]
 
 VOLUME /root/.config/rclone/
