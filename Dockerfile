@@ -15,10 +15,11 @@ RUN pip3 install PyPDF2
 
 RUN apk --update add imagemagick
 
-COPY script /script
+COPY script /root/script
 
 
 RUN apk add --no-cache bash
-ENTRYPOINT [ "bash" ]
+
+ENTRYPOINT [ "python3 /root/script/sync.py" ]
 
 VOLUME /root/.config/rclone/
