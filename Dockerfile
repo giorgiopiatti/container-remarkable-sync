@@ -22,4 +22,4 @@ RUN apk add --no-cache bash
 
 ENTRYPOINT [ "python3", "/root/script/sync.py" ]
 
-VOLUME /root/.config/rclone/
+VOLUME ["/root/.config/rclone/"]
