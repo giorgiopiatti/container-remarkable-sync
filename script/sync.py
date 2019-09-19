@@ -26,7 +26,7 @@ remarkableDirectory = "/home/root/.local/share/remarkable/xochitl"
 remarkableDirectoryTemplates = "/usr/share/remarkable/templates"
 remarkableUsername = "root"
 remarkableIP = "10.11.99.1"
-emptyFilePath = "/home/root/script/empty.pdf"
+emptyFilePath = "/root/script/empty.pdf"
 
 def main():
     while True:
