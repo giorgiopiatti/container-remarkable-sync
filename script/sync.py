@@ -26,50 +26,56 @@ remarkableDirectory = "/home/root/.local/share/remarkable/xochitl"
 remarkableDirectoryTemplates = "/usr/share/remarkable/templates"
 remarkableUsername = "root"
 remarkableIP = "10.11.99.1"
+emptyFilePath = "/home/root/script/empty.pdf"
 
 def main():
-    parser = ArgumentParser()
-    parser.add_argument("-d",
-                        "--download",
-                        help="pass when rM is connected, to back up rM data",
-                        action="store_true")
-    parser.add_argument("-s;",
-                        "--sync",
-                        help="Sync data between the ReMarkable and the library folder",
-                        action="store_true")
-    parser.add_argument("-c",
-                        "--convert",
-                        help="use rM files in backup directory to generate annotated PDFs and save them in your library",
-                        action="store_true")
-    parser.add_argument("-u",
-                        "--prepare_upload",
-                        help="prepare upload of files",
-                        action="store_true")
-    parser.add_argument("-l",
-                        "--load_on_device",
-                        help="load on device",
-                        action="store_true")
-    parser.add_argument("-t",
-                        "--test",
-                        help="test script, doesn't perform any action",
-                        action="store_true")
-    args = parser.parse_args()
-    if args.download:
-        downloadRM()
-    if args.sync:
-        print("Sync in progress")
-        downloadRM()
-        convertFiles()
-        prepareUploadPDF(False)
-        prepareUploadEBUP(False)
-        loadOnRM()
-    if args.convert:
-        convertFiles()
-    if args.prepare_upload:
-        prepareUpload(args.dry_upload)
-    if args.load_on_device:
-        loadOnRM()
-    print("Done!")
+    while True:
+        print(" ")
+        print("Remarkable Sync Script. Please choose a command.")
+        print("d)   Download files from ReMarkable")
+        print("u)   Upload files to ReMarkable")
+        print("e)   Export files")
+        print("i)   Import files")
+        print("s)   Sync files (download, export, import, upload)")
+        print("c)   Config script")
+        print("h)   Print help")
+        print("q)   Quit program")
+        print("d/u/e/i/s/c/h/q> ")
+        command = input()
+
+        if command == "q":
+            break;
+        elif command == "d":
+            downloadRM()
+        elif command == "u":
+            loadOnRM()
+        elif command == "e":
+            convertFiles()
+        elif command == "i":
+            prepareUploadPDF(False)
+            prepareUploadEBUP(False)
+        elif command == "s":
+            print("Sync in progress")
+            downloadRM()
+            convertFiles()
+            prepareUploadPDF(False)
+            prepareUploadEBUP(False)
+            loadOnRM()
+        elif command == "c":
+            config()
+        elif command == "h":
+            helpInfo()
+        else:
+            helpInfo()
+            
+def helpInfo():
+    print("Help")
+
+def config():
+    print("Configuring the sync script and rclone")
+    print("Configuring rclone, please follow the instruction.")
+    rcloneConfig = "rclone config"
+    os.system(rcloneConfig)
 
 ### BACK UP  (FULL) ###
 def downloadRM():
@@ -110,12 +116,14 @@ def convertFiles():
     for i in range(0, len(files)):
         # get file reference number
         refNrPath = remarkablePCDirectory + remContent + "/" + files[i]
+        print("ID: "+refNrPath)
         # get meta Data
         meta = json.loads(open(refNrPath + ".metadata").read())
         content = json.loads(open(refNrPath + ".content").read())
         fname = meta["visibleName"]
         # Does this lines file have an associated pdf?
         isPDF = content["fileType"] == "pdf"
+
 
         pathDirectoryFile = setDirectory(meta["parent"])
         try:
@@ -132,7 +140,7 @@ def convertFiles():
             if isPDF:
                 # deal with annotated pdfs
                 # have we exported this thing before?
-                print("exporting PDF: " + fname)
+                print("exporting PDF: " + fname + "\n    path: " + syncFilePath)
                 local_annotExist = True if glob.glob(syncFilePath[:-4] + ".annot.pdf", recursive=True) != [] else False
                 remoteChanged = True
                 if local_annotExist:
@@ -165,7 +173,7 @@ def convertFiles():
                             os.system(convertSvg2PdfCmd)
                             pdflist.append("temp/temppdf"+str(pg)+".pdf")
                         else:
-                            pdflist.append("empty.pdf")
+                            pdflist.append(emptyFilePath)
             
                     merged_rm = "temp/merged_rm.pdf"
                     os.system("pdftk "+ (" ").join(pdflist)+" cat output "+merged_rm)
