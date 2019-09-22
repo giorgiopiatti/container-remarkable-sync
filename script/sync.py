@@ -126,10 +126,7 @@ def convertFiles():
 
 
         pathDirectoryFile = setDirectory(meta["parent"])
-        try:
-            os.makedirs(syncDirectory + "/" + pathDirectoryFile) # will create the directory only if it does not exist
-        except FileExistsError:
-            pass
+        os.makedirs(syncDirectory + "/" + pathDirectoryFile, exist_ok=True) # will create the directory only if it does not exist
         
         # Get list of all rm files i.e. all pages
         rmPaths = glob.glob(refNrPath+"/*.rm")
