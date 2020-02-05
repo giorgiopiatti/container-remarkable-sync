@@ -30,11 +30,6 @@ RUN apk --no-cache add ca-certificates fuse wget \
     && mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/bin \
     && rm -r /tmp/rclone* 
 
-#RUN addgroup alpha \
-#   && adduser -h /home/alpha -s /bin/ash -G alpha -D alpha
-
-#USER alpha
-
 COPY script /root/script
 
 ENTRYPOINT [ "python3", "/root/script/sync.py" ]
