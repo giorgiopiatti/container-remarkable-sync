@@ -1,54 +1,43 @@
 # ReMarkable sync container
-Synchronization script for the reMarkable e-reader
 
-Synchronization script for the reMarkable e-reader. The idea is to have a "Library" folder on your PC which is synchronized with the reMarkable. When new files appear in this local directory this script will push them over to the rM. When files are edited, created or annotated on the rM they get converted to .pdf (from .lines) and copied back to the Library folder (with the suffix ".annot").
-Nootebooks are also converted to .pdf (with the suffix ".notes").
-The folder structure of the "Library" is preserved when syncing with the reMarkable and viceversa.
+This project features a sync system for the ReMarkable tablet.
 
-This project is an improved version of the work of lschwetlick (https://github.com/lschwetlick/rMsync)
-This repository is includes an improved version of the script https://github.com/lschwetlick/maxio/tree/master/tools.
+The idea is to synchronize a local folder on the PC with the ReMarkable tablet via USB using ssh, without needing to act manually on each file and folder.
+
+A Library folder is used on the PC to save the original files, the notes and the annotated file using a normal directory structure.
+
+When the files are annotated on the ReMarkable they get converted to PDF with the suffix '.annot'. Notebooks are also converted to PDF with the suffix '.notes'.
 
 ### Example
-- mybook.annot.pdf (annotated file)
+
 - mybook.pdf (original file)
+- mybook.annot.pdf (annotated file)
 - mynotebook.notes.pdf (written notes)
 
-## Requirements
-- imagemagick
-- pdftk
-- rclone
-
-You must adjust the paths at the top of the script to your setup before running!
-
 ## Usage
-Before the first usage it's necessary to configure rclone, that handles the syncing of the ReMarkable folder between the PC and the tablet.
-```
-- rclone config
-- Select new remote
-name> remarkable
-Storage> 23  #sftp
-Host> YOUR_REMARKABLE_IP
-user> root
-port> 22
-y/g/n> y #Save the password
-... #Skip this or configure as you wish
-- save the configuration
 
-```
-usage: sync.py [-b] [-c] [-u] [-d] [-s]
+The script can be used via the containers (recommended way) or by installing the dependencies yourself.
+The default mode is as interactive shell, but is also possible to execute it with command line arguments:
 
-```
-optional arguments:
-  -b, --backup                        download files from the connected rM
-  -c, --convert                       convert the backup lines files to annotated pdfs and notes
-  -u, --upload                        upload new files from the library directory to the rM
-  -d, --dry_upload                    runs upload function but without actually pushing anything (just for debugging)
-  -s, --sync                          Sync data between the ReMarkable and the library folder
-```
+- d: download files from the ReMarkable tablet
+- u: upload files to the ReMarkable tablet
+- e: export files to the Library folder (from the local copy of the ReMarkable tablet)
+- i: import files from the Library folder
+- s: sync files (download)
+- c: config program
+- h: print program help
+- q: quit program
 
-## Note:
-You can also remove the last line of the sync method and reboot the device yourself (an UI update is needed to show the new synced files).
+Before the first usage it's necessary to configure the program, please use the c option and follow the instructions. When using docker the configuration is saved when running multiples times.
 
-## Known issues
+## How it works
 
-- When syncing files to the ReMarkable they appears like they were modified 49 years ago.
+This script is based on the rM2svg script by @peerdavid (https://github.com/peerdavid/rmapi/blob/master/tools/rM2svg) for converting the '.rm' files to svg vector.
+
+It maintains a local copy of the internal user data directory located in '.local/share/remarkable/xochitl', this is used when exporting and importing. This allows to run the program faster and not to have an incomplete structure on the ReMarkable.
+
+## Known issues & improvements
+
+- When syncing files to the ReMarkable they appear like they were modified 49 years ago.
+- Deletion and renaming is a bit tricky, is not done automatically.
+- The script could be faster. Each time it runs, it scans all files for modifications, so the runtime is $\mathcal{O}(#files)$.
