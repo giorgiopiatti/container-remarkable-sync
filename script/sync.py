@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 ### IMPORTS ###
-from rM2svg import rm2svg
 import os
 import sys
 import shutil
