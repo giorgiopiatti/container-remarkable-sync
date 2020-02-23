@@ -176,13 +176,11 @@ def convertFiles():
                     pdfy = int(pdfsize[3])
 
                     try:
-                        os.mkdir("./temp")
-                    except OSError as exc:
-                        if exc.errno != errno.EEXIST:
-                            raise
+                        os.mkdir('temp')
+                    except:
                         pass
 
-                    merged_rm = "./temp/merged_rm.pdf"
+                    merged_rm = "temp/merged_rm.pdf"
                     rm2pdfCommand = "".join(
                         ["./rm2pdf", " ", refNrPath, " ", merged_rm, " -t ./empty.pdf"])
                     os.system(rm2pdfCommand)
@@ -191,7 +189,7 @@ def convertFiles():
                                         merged_rm, " output ", "\""+syncFilePath[:-4] + ".annot.pdf\""])
                     os.system(stampCmd)
                     # Remove temporary files
-                    shutil.rmtree("./temp", ignore_errors=False, onerror=None)
+                    shutil.rmtree("temp", ignore_errors=False, onerror=None)
                     print("exporting done!")
                 else:
                     print(fname + " has not changed")
@@ -213,10 +211,8 @@ def convertFiles():
 
                     # Create merged_backgound
                     try:
-                        os.mkdir("./temp")
-                    except OSError as exc:
-                        if exc.errno != errno.EEXIST:
-                            raise
+                        os.mkdir('temp')
+                    except:
                         pass
                     with open(refNrPath+".pagedata") as file:
                         backgrounds = [line.strip() for line in file]
@@ -231,17 +227,17 @@ def convertFiles():
                         backgrounds.append("Blank")
 
                     for bg in backgrounds:
-                        convertSvg2PdfCmd = "".join(["rsvg-convert -f pdf -o ", "./temp/bg_" + str(
+                        convertSvg2PdfCmd = "".join(["rsvg-convert -f pdf -o ", "temp/bg_" + str(
                             bg_pg) + ".pdf ", "'", remarkablePCDirectory + remTemplates + bg + ".svg", "'"])
                         os.system(convertSvg2PdfCmd)
-                        bglist.append("./temp/bg_"+str(bg_pg)+".pdf ")
+                        bglist.append("temp/bg_"+str(bg_pg)+".pdf ")
                         bg_pg += 1
-                    merged_bg = "./temp/merged_bg.pdf"
+                    merged_bg = "temp/merged_bg.pdf"
                     os.system("convert " + (" ").join(bglist) +
                               " " + merged_bg)
                     input1 = PdfFileReader(open(merged_bg, 'rb'))
 
-                    merged_rm = "./temp/merged_rm.pdf"
+                    merged_rm = "temp/merged_rm.pdf"
                     rm2pdfCommand = "".join(
                         ["./rm2pdf", " ", refNrPath, " ", merged_rm, " -t ./empty.pdf"])
                     os.system(rm2pdfCommand)
@@ -250,7 +246,7 @@ def convertFiles():
                                         merged_rm, " output " + "\""+syncFilePath[:-4] + ".notes.pdf"+"\""])
                     os.system(stampCmd)
                     # Delete temp directory
-                    shutil.rmtree("./temp", ignore_errors=False, onerror=None)
+                    shutil.rmtree("temp", ignore_errors=False, onerror=None)
                 else:
                     print(fname + " has not changed")
         if isPDF & (not meta["deleted"]):
