@@ -31,8 +31,8 @@ RUN apk add --no-cache pdftk
 RUN apk add --no-cache openssh
 RUN apk add --no-cache bash
 
-ENV RCLONE_VERSION=current
-ENV ARCH=amd64
+ARG RCLONE_VERSION=current
+ARG ARCH=amd64
 
 RUN apk --no-cache add ca-certificates fuse wget \
     && cd /tmp \
