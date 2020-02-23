@@ -32,7 +32,7 @@ Before the first usage it's necessary to configure the program, please use the c
 
 ## How it works
 
-This script is based on the rM2svg script by @peerdavid (https://github.com/peerdavid/rmapi/blob/master/tools/rM2svg) for converting the '.rm' files to svg vector.
+This script is based on the rm2pdf script (https://github.com/giorgiopiatti/rm2pdf) for converting the '.rm' files to pdf file.
 
 It maintains a local copy of the internal user data directory located in '.local/share/remarkable/xochitl', this is used when exporting and importing. This allows to run the program faster and not to have an incomplete structure on the ReMarkable.
 
