@@ -1,5 +1,7 @@
 # ReMarkable sync container
 
+[![DockerHub Pulls](https://img.shields.io/docker/pulls/giorgiopiatti/remarkable-sync.svg)](https://hub.docker.com/r/giorgiopiatti/remarkable-sync) [![DockerHub Stars](https://img.shields.io/docker/stars/giorgiopiatti/remarkable-sync.svg)](https://hub.docker.com/r/giorgiopiatti/remarkable-sync) [![GitHub Stars](https://img.shields.io/github/stars/giorgiopiatti/container-remarkable-sync.svg?label=github%20stars)](https://github.com/giorgiopiatti/container-remarkable-sync/) [![GitHub Forks](https://img.shields.io/github/forks/giorgiopiatti/container-remarkable-sync.svg?label=github%20forks)](https://github.com/giorgiopiatti/container-remarkable-sync/) [![GitHub License](https://img.shields.io/github/license/giorgiopiatti/container-remarkable-sync.svg)](https://github.com/giorgiopiatti/container-remarkable-sync)
+
 This project features a sync system for the ReMarkable tablet.
 
 The idea is to synchronize a local folder on the PC with the ReMarkable tablet via USB using ssh, without needing to act manually on each file and folder.
