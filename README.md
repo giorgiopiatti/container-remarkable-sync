@@ -1,4 +1,4 @@
-# ReMarkable sync container
+# ReMarkable Sync - Container image
 
 [![DockerHub Pulls](https://img.shields.io/docker/pulls/giorgiopiatti/remarkable-sync.svg)](https://hub.docker.com/r/giorgiopiatti/remarkable-sync) [![DockerHub Stars](https://img.shields.io/docker/stars/giorgiopiatti/remarkable-sync.svg)](https://hub.docker.com/r/giorgiopiatti/remarkable-sync) [![GitHub Stars](https://img.shields.io/github/stars/giorgiopiatti/container-remarkable-sync.svg?label=github%20stars)](https://github.com/giorgiopiatti/container-remarkable-sync/) [![GitHub Forks](https://img.shields.io/github/forks/giorgiopiatti/container-remarkable-sync.svg?label=github%20forks)](https://github.com/giorgiopiatti/container-remarkable-sync/) [![GitHub License](https://img.shields.io/github/license/giorgiopiatti/container-remarkable-sync.svg)](https://github.com/giorgiopiatti/container-remarkable-sync)
 
@@ -19,7 +19,16 @@ When the files are annotated on the ReMarkable they get converted to PDF with th
 ## Usage
 
 The script can be used via the containers (recommended way) or by installing the dependencies yourself.
-The default mode is as interactive shell, but is also possible to execute it with command line arguments:
+
+To use the container is necessary to pass a volume to the container, which will contain your library folder, this container assumes is mapped to `/ReMarkable`. Note this folder will contain two subfolders `device` and `sync` the former contains a copy of the `xochil` and `templates` folders from the ReMarkable tabler, the latter is the synced library.
+
+A sample usage is the following:
+
+```
+docker run -v PATH_TO_YOUR_LIBRARY:/ReMarkable --name=remarkable -it giorgiopiatti/remarkable-sync
+```
+
+The default mode is an interactive shell, but is also possible to execute it with command-line arguments:
 
 - d: download files from the ReMarkable tablet
 - u: upload files to the ReMarkable tablet
@@ -28,7 +37,7 @@ The default mode is as interactive shell, but is also possible to execute it wit
 - s: sync files (download)
 - c: config program
 - h: print program help
-- q: quit program
+- q: quit the program
 
 Before the first usage it's necessary to configure the program, please use the c option and follow the instructions. When using docker the configuration is saved when running multiples times.
 
@@ -41,5 +50,5 @@ It maintains a local copy of the internal user data directory located in '.local
 ## Known issues & improvements
 
 - When syncing files to the ReMarkable they appear like they were modified 49 years ago.
-- Deletion and renaming is a bit tricky, is not done automatically.
+- Deletion and renaming are a bit tricky, is not done automatically.
 - The script could be faster. Each time it runs, it scans all files for modifications, so the runtime is $\mathcal{O}(#files)$.
