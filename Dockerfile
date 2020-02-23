@@ -1,6 +1,17 @@
 # ====================================================================== #
-# Android SDK Docker Image
+# Remarkable sync container image
 # ====================================================================== #
+
+# Builder image
+# ---------------------------------------------------------------------- #
+FROM golang:1.13.8-alpine as builder
+RUN mkdir /build
+RUN apk update
+RUN apk add --no-cache git
+RUN git clone https://github.com/giorgiopiatti/rm2pdf /build/
+WORKDIR /build
+RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o rm2pdf ./
 
 # Base image
 # ---------------------------------------------------------------------- #
@@ -31,7 +42,9 @@ RUN apk --no-cache add ca-certificates fuse wget \
     && rm -r /tmp/rclone* 
 
 COPY script /root/script
+COPY --from=builder /build/rm2pdf /root/script/
 
+WORKDIR /root/script
 ENTRYPOINT [ "python3", "/root/script/sync.py" ]
 
 VOLUME ["/root/.config/rclone/"]

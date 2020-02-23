@@ -175,28 +175,16 @@ def convertFiles():
                     pdfsize = input1.getPage(0).mediaBox
                     pdfx = int(pdfsize[2])
                     pdfy = int(pdfsize[3])
-                    # export
-                    pdflist = []
-                    for pg in range(0, npages):
-                        rmpath = refNrPath+"/"+str(pg)+".rm"
-                        rmExists = True if glob.glob(rmpath) != [] else False
-                        if rmExists:  # Handle annotated pdf not on every single page
-                            try:
-                                os.mkdir("temp")
-                            except:
-                                pass
-                            rm2svg(rmpath, "temp/temprm"+str(pg) +
-                                   ".svg", coloured_annotations=False)
-                            convertSvg2PdfCmd = "".join(
-                                ["rsvg-convert -f pdf -o ", "temp/temppdf" + str(pg), ".pdf ", "temp/temprm" + str(pg) + ".svg"])
-                            os.system(convertSvg2PdfCmd)
-                            pdflist.append("temp/temppdf"+str(pg)+".pdf")
-                        else:
-                            pdflist.append(emptyFilePath)
+
+                    try:
+                        os.mkdir('temp')
+                    except:
+                        pass
 
                     merged_rm = "temp/merged_rm.pdf"
-                    os.system("pdftk " + (" ").join(pdflist) +
-                              " cat output "+merged_rm)
+                    rm2pdfCommand = "".join(
+                        ["./rm2pdf", " ", refNrPath, " ", merged_rm, " -t ./empty.pdf"])
+                    os.system(rm2pdfCommand)
 
                     stampCmd = "".join(["pdftk ", "\""+origPDF+"\"", " multistamp ",
                                         merged_rm, " output ", "\""+syncFilePath[:-4] + ".annot.pdf\""])
@@ -221,6 +209,8 @@ def convertFiles():
                     # has this version changed since we last exported it?
                     remoteChanged = remote_annot_mod_time > local_annot_mod_time
                 if remoteChanged:
+
+                    # Create merged_backgound
                     try:
                         os.mkdir('temp')
                     except:
@@ -230,6 +220,13 @@ def convertFiles():
 
                     bg_pg = 0
                     bglist = []
+
+                    # Add missing backgrounds at the end (which are sometimes omitted)
+                    pagesNumber = content['pageCount']
+                    diff = pagesNumber - len(backgrounds)
+                    for i in range(diff):
+                        backgrounds.append("Blank")
+
                     for bg in backgrounds:
                         convertSvg2PdfCmd = "".join(["rsvg-convert -f pdf -o ", "temp/bg_" + str(
                             bg_pg) + ".pdf ", "'", remarkablePCDirectory + remTemplates + bg + ".svg", "'"])
@@ -240,24 +237,12 @@ def convertFiles():
                     os.system("convert " + (" ").join(bglist) +
                               " " + merged_bg)
                     input1 = PdfFileReader(open(merged_bg, 'rb'))
-                    pdfsize = input1.getPage(0).mediaBox
-                    pdfx = int(pdfsize[2])
-                    pdfy = int(pdfsize[3])
-
-                    npages = len(glob.glob(refNrPath+"/*.rm"))
-                    pdflist = []
-                    for pg in range(0, npages):
-                        rmpath = rmPaths[pg]
-                        rm2svg(rmpath, "temp/temprm"+str(pg) +
-                               ".svg", coloured_annotations=True)
-                        convertSvg2PdfCmd = "".join(
-                            ["rsvg-convert -f pdf -o ", "temp/temppdf" + str(pg), ".pdf ", "temp/temprm" + str(pg) + ".svg"])
-                        os.system(convertSvg2PdfCmd)
-                        pdflist.append("temp/temppdf"+str(pg)+".pdf")
 
                     merged_rm = "temp/merged_rm.pdf"
-                    os.system("pdftk " + (" ").join(pdflist) +
-                              " cat output "+merged_rm)
+                    rm2pdfCommand = "".join(
+                        ["./rm2pdf", " ", refNrPath, " ", merged_rm, " -t ./empty.pdf"])
+                    os.system(rm2pdfCommand)
+
                     stampCmd = "".join(["pdftk ", "\""+merged_bg+"\"", " multistamp ",
                                         merged_rm, " output " + "\""+syncFilePath[:-4] + ".notes.pdf"+"\""])
                     os.system(stampCmd)
@@ -453,8 +438,27 @@ def cp(rmPdfList, directoryPath, fName, parentUUID, fType, dry):
         UUID = str(uuid.uuid4())
         basePath = remarkablePCDirectory + remContent + "/" + UUID
 
-        content = {"extraMetadata": {}, "fileType": fType, "lastOpenedPage": 0,
-                   "lineHeight": -1, "margins": 180, "textScale": 1, "transform": {}}
+        pagesNumber = 0
+
+        if fType == "pdf":
+            f = open(syncDirectory + "/" + directoryPath + "/" +
+                     fName + "." + fType, "rb")
+            input1 = PdfFileReader(f)
+            pagesNumber = input1.getNumPages()
+            f.close()
+
+        content = {
+            "dummyDocument": False,
+            "extraMetadata": {},
+            "fileType": fType,
+            "lastOpenedPage": 0,
+            "lineHeight": -1,
+            "margins": 180,
+            "textScale": 1,
+            "pageCount": pagesNumber,
+            "transform": {}
+        }
+
         metadata = {
             "deleted": False,
             "lastModified":  local_annot_mod_time*1000,
