@@ -138,6 +138,8 @@ def convertFiles():
         # Does this lines file have an associated pdf?
         isPDF = content["fileType"] == "pdf"
 
+        if meta["parent"] == 'trash':
+            continue
         pathDirectoryFile = setDirectory(meta["parent"])
         # will create the directory only if it does not exist
         os.makedirs(syncDirectory + "/" + pathDirectoryFile, exist_ok=True)
